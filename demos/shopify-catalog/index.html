@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo: Shopify catalog organizer</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--b:#3047ff;--ink:#10162f;--l:#dde2ee;--bg:#f2f4f9;--g:#19b58a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,sans-serif}
+h1,h2{font-family:Sora,sans-serif;letter-spacing:-.03em;margin:0}.w{width:min(1100px,92%);margin:auto}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--b);outline-offset:2px}
+.demo{background:var(--ink);color:#fff;font-size:14px;text-align:center;padding:8px}.demo a{color:#9db0ff}
+h1{font-size:clamp(30px,5vw,48px);margin:40px 0 8px}.sub{color:#566079;max-width:620px;margin:0 0 28px}
+.top{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start}
+.p{background:#fff;border:1px solid var(--l);border-radius:20px;padding:22px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+input,select{font:inherit;padding:11px 13px;border:1px solid var(--l);border-radius:10px;flex:1;min-width:140px}
+.btn{background:var(--b);color:#fff;border:0;border-radius:10px;padding:11px 18px;font:600 15px Figtree;cursor:pointer}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:15px;min-width:560px}
+th{text-align:left;font-weight:600;color:#566079;border-bottom:2px solid var(--l);padding:8px}td{padding:12px 8px;border-bottom:1px solid var(--l);vertical-align:top}
+td small{display:block;color:#566079}.pr{font-weight:600;white-space:nowrap}
+.t{display:inline-block;background:#e8ecff;color:#2a3bc0;border-radius:99px;padding:2px 10px;font-size:13px}
+h2{font-size:20px;margin-bottom:12px}.ck{list-style:none;padding:0;margin:0}.ck li{padding:8px 0;border-bottom:1px solid var(--l)}
+.ck label{display:flex;gap:10px;cursor:pointer}.ck input{flex:none;min-width:0;width:18px;height:18px;margin-top:3px;accent-color:var(--b)}
+.pg{height:10px;background:#e8ecff;border-radius:9px;margin:12px 0 4px;overflow:hidden}.pg i{display:block;height:100%;width:0;background:var(--g);transition:width .3s}
+footer{padding:36px 0;color:#566079;font-size:14px}
+@media(max-width:860px){.top{grid-template-columns:1fr}}
+</style></head><body>
+<div class="demo">Demo project by Rohit. Sample products, not a real store. <a href="../../">Back to portfolio</a></div>
+<div class="w"><h1>Product catalog, cleaned and ready to upload</h1><p class="sub">Titles, categories, tags and descriptions are checked before upload. Search the sample catalog, tick off the quality checks, then download the Shopify import CSV.</p>
+<div class="top"><div class="p"><div class="tools"><input id="q" placeholder="Search products or tags" aria-label="Search products"><select id="c" aria-label="Filter by category"><option value="">All categories</option></select><button class="btn" id="dl">Download Shopify CSV</button></div>
+<div class="tw"><table><thead><tr><th>Product</th><th>Category</th><th>SKU</th><th>Price</th></tr></thead><tbody id="r"></tbody></table></div><p id="n" style="color:#566079;font-size:14px;margin:12px 0 0"></p></div>
+<aside class="p"><h2>Quality checklist</h2><div class="pg"><i id="bar"></i></div><div id="pc" style="font-size:14px;color:#566079"></div>
+<ul class="ck" id="ck"></ul></aside></div></div>
+<footer class="w">© 2026 Rohit. Sample data created for demonstration.</footer>
+<script>
+const P=[["Ceramic pour-over set","Kitchen","KT-101",42,"coffee, ceramic, gift","Hand-glazed dripper and server for a slow, clean cup."],["Linen apron, charcoal","Kitchen","KT-102",36,"linen, apron","Washed linen apron with adjustable neck strap and deep pockets."],["Oak serving board","Kitchen","KT-103",48,"oak, board, hosting","Solid oak board with a food-safe oil finish."],["Wool throw, oat","Home","HM-201",89,"wool, blanket","Soft woven throw for sofas and beds."],["Soy candle, cedar","Home","HM-202",24,"candle, cedar, gift","Slow-burning soy wax candle with a woody scent."],["Canvas tote, sand","Bags","BG-301",30,"tote, canvas","Heavyweight canvas tote with an inner zip pocket."],["Leather card holder","Bags","BG-302",28,"leather, wallet","Slim card holder with four slots."],["Enamel camp mug","Outdoor","OD-401",16,"enamel, camping","Chip-resistant enamel mug for trail and kitchen."]];
+const C=["Titles follow one format: item, material, colour","Descriptions are original and under 160 words","Every product has a unique SKU and a price","Collections and tags are consistent","Image alt text is added","Duplicates and typos are checked"];
+const $=i=>document.getElementById(i);
+[...new Set(P.map(p=>p[1]))].forEach(c=>$('c').add(new Option(c,c)));
+function draw(){const q=$('q').value.toLowerCase(),c=$('c').value;const L=P.filter(p=>(!c||p[1]==c)&&(p.join(' ').toLowerCase().includes(q)));
+$('r').innerHTML=L.map(p=>`<tr><td><b>${p[0]}</b><small>${p[5]}</small></td><td><span class="t">${p[1]}</span></td><td>${p[2]}</td><td class="pr">$${p[3]}.00</td></tr>`).join('')||'<tr><td colspan="4">No products match. Try a different search.</td></tr>';
+$('n').textContent=L.length+' of '+P.length+' products shown'}
+$('q').oninput=$('c').onchange=draw;draw();
+$('ck').innerHTML=C.map((t,i)=>`<li><label><input type="checkbox" data-i="${i}">${t}</label></li>`).join('');
+function prog(){const d=document.querySelectorAll('.ck input:checked').length;$('bar').style.width=d/C.length*100+'%';$('pc').textContent=d+' of '+C.length+' checks done'}
+$('ck').onchange=prog;prog();
+$('dl').onclick=()=>{const h=['Handle','Title','Body (HTML)','Vendor','Type','Tags','Published','Variant SKU','Variant Price','Variant Inventory Qty'];
+const e=s=>'"'+String(s).replace(/"/g,'""')+'"';
+const rows=P.map(p=>[p[0].toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-$/,''),p[0],'<p>'+p[5]+'</p>','Demo Store',p[1],p[4],'TRUE',p[2],p[3].toFixed(2),20].map(e).join(','));
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([h.map(e).join(',')+'\n'+rows.join('\n')],{type:'text/csv'}));a.download='shopify-products-demo.csv';a.click()};
+</script></body></html>
