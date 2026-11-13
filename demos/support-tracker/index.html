@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Demo: Customer support quality tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--g:#0d6b52;--m:#19b58a;--ink:#10231e;--bg:#eef6f2;--l:#d3e4dc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Figtree,sans-serif}
+h1,h2,.k b{font-family:Sora,sans-serif;letter-spacing:-.03em;margin:0}.w{width:min(1100px,92%);margin:auto}
+button:focus-visible,select:focus-visible{outline:3px solid var(--g);outline-offset:2px}
+.demo{background:var(--ink);color:#fff;font-size:14px;text-align:center;padding:8px}.demo a{color:#8fe3c6}
+h1{font-size:clamp(30px,5vw,48px);margin:40px 0 8px}.sub{color:#4b645b;max-width:620px;margin:0 0 26px}
+.kp{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.k{background:#fff;border-radius:18px;padding:20px;border:1px solid var(--l)}.k b{display:block;font-size:32px;color:var(--g)}.k span{font-size:14px;color:#4b645b}
+.row{display:grid;grid-template-columns:1fr 340px;gap:16px}.p{background:#fff;border:1px solid var(--l);border-radius:20px;padding:22px}
+h2{font-size:19px;margin-bottom:14px}.f{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.f button{border:1px solid var(--l);background:#fff;border-radius:99px;padding:7px 16px;font:500 14px Figtree;cursor:pointer}.f button[aria-pressed=true]{background:var(--g);color:#fff;border-color:var(--g)}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:15px;min-width:520px}th{text-align:left;color:#4b645b;font-weight:600;padding:8px;border-bottom:2px solid var(--l)}td{padding:11px 8px;border-bottom:1px solid var(--l)}
+.s{border-radius:99px;padding:2px 10px;font-size:13px;font-weight:600}.Open{background:#fff0d6;color:#8a5a00}.Pending{background:#e3ecff;color:#2a3bc0}.Resolved{background:#d9f5e8;color:var(--g)}
+.bl{margin-bottom:12px;font-size:14px}.bl div{height:12px;background:#e3f2ea;border-radius:9px;margin-top:4px;overflow:hidden}.bl i{display:block;height:100%;background:var(--m);border-radius:9px;transition:width .4s}
+footer{padding:36px 0;color:#4b645b;font-size:14px}
+@media(max-width:860px){.kp{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}
+</style></head><body>
+<div class="demo">Demo project by Rohit. Sample tickets, not real customers. <a href="../../">Back to portfolio</a></div>
+<div class="w"><h1>Support quality, at a glance</h1><p class="sub">Every ticket gets a status, issue type, response time and quality score, so slow replies and repeat problems show up early. Filter by status to see the numbers change.</p>
+<div class="kp"><div class="k"><b id="a">0</b><span>Tickets shown</span></div><div class="k"><b id="b">0</b><span>Avg first reply (min)</span></div><div class="k"><b id="c">0%</b><span>Resolved</span></div><div class="k"><b id="d">0</b><span>Avg quality score /10</span></div></div>
+<div class="row"><div class="p"><h2>Ticket log</h2><div class="f" id="f" role="group" aria-label="Filter by status"></div>
+<div class="tw"><table><thead><tr><th>ID</th><th>Issue</th><th>Status</th><th>First reply</th><th>Score</th></tr></thead><tbody id="t"></tbody></table></div></div>
+<aside class="p"><h2>Tickets by issue</h2><div id="i"></div></aside></div></div>
+<footer class="w">© 2026 Rohit. Sample data created for demonstration.</footer>
+<script>
+const T=[["T-1001","Order status","Resolved",6,9],["T-1002","Refund request","Resolved",14,8],["T-1003","Wrong item","Pending",22,7],["T-1004","Order status","Resolved",4,10],["T-1005","Shipping delay","Open",31,6],["T-1006","Product question","Resolved",9,9],["T-1007","Refund request","Pending",18,8],["T-1008","Shipping delay","Resolved",12,8],["T-1009","Order status","Open",5,9],["T-1010","Wrong item","Resolved",16,7],["T-1011","Product question","Resolved",8,10],["T-1012","Shipping delay","Pending",27,6]];
+const $=i=>document.getElementById(i),S=["All","Open","Pending","Resolved"];let cur="All";
+const avg=(l,k)=>l.length?(l.reduce((s,x)=>s+x[k],0)/l.length):0;
+function draw(){const L=T.filter(x=>cur=="All"||x[2]==cur);
+$('a').textContent=L.length;$('b').textContent=avg(L,3).toFixed(0);$('d').textContent=avg(L,4).toFixed(1);
+$('c').textContent=(L.length?Math.round(L.filter(x=>x[2]=="Resolved").length/L.length*100):0)+'%';
+$('t').innerHTML=L.map(x=>`<tr><td>${x[0]}</td><td>${x[1]}</td><td><span class="s ${x[2]}">${x[2]}</span></td><td>${x[3]} min</td><td>${x[4]}/10</td></tr>`).join('')||'<tr><td colspan="5">No tickets with this status.</td></tr>';
+const g={};L.forEach(x=>g[x[1]]=(g[x[1]]||0)+1);const mx=Math.max(1,...Object.values(g));
+$('i').innerHTML=Object.entries(g).map(([k,v])=>`<div class="bl">${k} (${v})<div><i style="width:${v/mx*100}%"></i></div></div>`).join('')||'Nothing to show for this filter.';
+$('f').innerHTML=S.map(s=>`<button aria-pressed="${s==cur}" data-s="${s}">${s}</button>`).join('')}
+$('f').onclick=e=>{if(e.target.dataset.s){cur=e.target.dataset.s;draw()}};draw();
+</script></body></html>
